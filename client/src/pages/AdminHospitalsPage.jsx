@@ -7,10 +7,16 @@ const initialForm = { name: '', address: '', phone: '', email: '', departments: 
 const AdminHospitalsPage = () => {
   const [hospitals, setHospitals] = useState([]);
   const [form, setForm] = useState(initialForm);
+  const [error, setError] = useState('');
+  const [deletingId, setDeletingId] = useState('');
 
   const load = async () => {
-    const { data } = await hospitalAPI.list();
-    setHospitals(data);
+    try {
+      const { data } = await hospitalAPI.list();
+      setHospitals(data);
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to load hospitals');
+    }
   };
 
   useEffect(() => {
@@ -19,12 +25,33 @@ const AdminHospitalsPage = () => {
 
   const create = async (event) => {
     event.preventDefault();
-    await hospitalAPI.create({
-      ...form,
-      departments: form.departments.split(',').map((d) => d.trim()).filter(Boolean)
-    });
-    setForm(initialForm);
-    load();
+    setError('');
+    try {
+      await hospitalAPI.create({
+        ...form,
+        departments: form.departments.split(',').map((d) => d.trim()).filter(Boolean)
+      });
+      setForm(initialForm);
+      load();
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to create hospital');
+    }
+  };
+
+  const removeHospital = async (hospital) => {
+    const ok = window.confirm(`Remove "${hospital.name}" from the registered hospital list?`);
+    if (!ok) return;
+
+    setError('');
+    setDeletingId(hospital._id);
+    try {
+      await hospitalAPI.remove(hospital._id);
+      await load();
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to remove hospital');
+    } finally {
+      setDeletingId('');
+    }
   };
 
   return (
@@ -37,11 +64,24 @@ const AdminHospitalsPage = () => {
         <input className="rounded border border-teal-200 px-2 py-1" placeholder="Departments (comma separated)" value={form.departments} onChange={(e) => setForm((p) => ({ ...p, departments: e.target.value }))} />
         <button className="rounded bg-primary px-3 py-1 text-white md:col-span-5">Add Hospital</button>
       </form>
+      {error ? <p className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p> : null}
       <div className="mt-4 space-y-2">
         {hospitals.map((hospital) => (
           <div key={hospital._id} className="rounded-xl bg-white p-3 shadow-card">
-            <p className="font-semibold">{hospital.name}</p>
-            <p className="text-sm text-teal-700">{hospital.address}</p>
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <p className="font-semibold">{hospital.name}</p>
+                <p className="text-sm text-teal-700">{hospital.address}</p>
+              </div>
+              <button
+                type="button"
+                className="rounded border border-red-200 px-3 py-1 text-sm font-medium text-red-600 hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60"
+                disabled={deletingId === hospital._id}
+                onClick={() => removeHospital(hospital)}
+              >
+                {deletingId === hospital._id ? 'Removing...' : 'Remove'}
+              </button>
+            </div>
           </div>
         ))}
       </div>

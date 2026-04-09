@@ -56,7 +56,8 @@ export const hospitalAPI = {
   list: () => api.get('/hospitals'),
   detail: (id) => api.get(`/hospitals/${id}`),
   create: (payload) => api.post('/hospitals', payload),
-  update: (id, payload) => api.put(`/hospitals/${id}`, payload)
+  update: (id, payload) => api.put(`/hospitals/${id}`, payload),
+  remove: (id) => api.delete(`/hospitals/${id}`)
 };
 
 export const appointmentAPI = {

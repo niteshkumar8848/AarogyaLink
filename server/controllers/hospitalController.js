@@ -1,6 +1,8 @@
 const Hospital = require('../models/Hospital');
 const Doctor = require('../models/Doctor');
 
+const normalizeId = (value) => String(value?._id || value || '');
+
 const listHospitals = async (req, res) => {
   try {
     const hospitals = await Hospital.find().sort({ name: 1 });
@@ -44,9 +46,52 @@ const updateHospital = async (req, res) => {
   }
 };
 
+const deleteHospital = async (req, res) => {
+  try {
+    const hospital = await Hospital.findById(req.params.id);
+    if (!hospital) return res.status(404).json({ message: 'Hospital not found' });
+
+    const doctors = await Doctor.find({ 'hospitals.hospitalId': hospital._id });
+
+    await Promise.all(
+      doctors.map(async (doctor) => {
+        const filteredHospitals = (doctor.hospitals || []).filter(
+          (item) => normalizeId(item?.hospitalId) !== normalizeId(hospital._id)
+        );
+
+        doctor.hospitals = filteredHospitals;
+
+        const primaryHospitalId = filteredHospitals[0]?.hospitalId;
+        if (!primaryHospitalId) {
+          doctor.hospitalName = '';
+          doctor.location = '';
+          await doctor.save();
+          return;
+        }
+
+        const primaryHospital = await Hospital.findById(primaryHospitalId).select('name address');
+        doctor.hospitalName = primaryHospital?.name || '';
+        doctor.location = primaryHospital?.address || '';
+        await doctor.save();
+      })
+    );
+
+    await Hospital.findByIdAndDelete(hospital._id);
+
+    return res.json({
+      message: 'Hospital removed successfully',
+      removedHospitalId: hospital._id,
+      doctorsUpdated: doctors.length
+    });
+  } catch (error) {
+    return res.status(500).json({ message: 'Failed to delete hospital', error: error.message });
+  }
+};
+
 module.exports = {
   listHospitals,
   getHospitalById,
   createHospital,
-  updateHospital
+  updateHospital,
+  deleteHospital
 };
