@@ -1,5 +1,6 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
 import ProtectedRoute from './components/common/ProtectedRoute';
+import AppLoadingSkeleton from './components/common/AppLoadingSkeleton';
 import useAuth from './hooks/useAuth';
 import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/LoginPage';
@@ -30,7 +31,7 @@ import ContactPage from './pages/ContactPage';
 const RootRoute = () => {
   const { user, loading } = useAuth();
 
-  if (loading) return <div className="p-8 text-center">Loading...</div>;
+  if (loading) return <AppLoadingSkeleton title="Preparing your account..." />;
   if (!user) return <LandingPage />;
   if (user.role === 'patient') return <Navigate to="/patient/dashboard" replace />;
   if (user.role === 'doctor') return <Navigate to="/doctor/dashboard" replace />;

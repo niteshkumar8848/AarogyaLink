@@ -1,12 +1,13 @@
 import { Navigate, useLocation } from 'react-router-dom';
 import useAuth from '../../hooks/useAuth';
+import AppLoadingSkeleton from './AppLoadingSkeleton';
 
 const ProtectedRoute = ({ allowedRoles, children }) => {
   const { user, loading } = useAuth();
   const location = useLocation();
 
   if (loading) {
-    return <div className="p-8 text-center">Loading...</div>;
+    return <AppLoadingSkeleton title="Loading secure area..." />;
   }
 
   if (!user) {
