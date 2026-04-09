@@ -111,7 +111,7 @@ const LandingPage = () => {
                   </div>
                   <div>
                     <p className="font-semibold text-ink">Dr. Gobinda Bhattarai</p>
-                    <p className="text-xs text-teal-700">Cardiology · AarogyaLink Central Hospital</p>
+                    <p className="text-xs text-teal-700">Cardiology · City Hospital Kathmandu</p>
                   </div>
                 </div>
                 <div className="mt-3 grid gap-1 text-xs text-teal-900 sm:grid-cols-2">

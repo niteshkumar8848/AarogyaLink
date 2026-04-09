@@ -28,7 +28,7 @@ const buildDefaultSchedule = () => [
 ];
 
 const getOrCreateDefaultHospital = async () => {
-  const name = process.env.DEFAULT_HOSPITAL_NAME || 'AarogyaLink Central Hospital';
+  const name = process.env.DEFAULT_HOSPITAL_NAME || 'City Hospital Kathmandu';
   let hospital = await Hospital.findOne({ name });
 
   if (!hospital) {
