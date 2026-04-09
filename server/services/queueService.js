@@ -98,17 +98,37 @@ const addAppointmentToQueue = async ({ appointment, isWalkIn = false }) => {
 };
 
 const getPatientQueueStatus = async (appointmentId) => {
-  const appointment = await Appointment.findById(appointmentId);
+  const appointment = await Appointment.findById(appointmentId)
+    .populate({ path: 'doctorId', populate: { path: 'userId', select: 'name profilePhoto' } })
+    .populate('hospitalId', 'name address');
   if (!appointment) throw new Error('Appointment not found');
 
+  const doctorProfile = appointment.doctorId;
+  const doctorUser = doctorProfile?.userId;
+  const hospital = appointment.hospitalId;
+
+  const details = {
+    appointmentId: appointment._id,
+    doctorId: doctorProfile?._id || appointment.doctorId,
+    doctorName: doctorUser?.name || 'Doctor',
+    doctorPhoto: doctorUser?.profilePhoto || '',
+    specialization: doctorProfile?.specialization || '',
+    hospitalName: hospital?.name || '',
+    hospitalAddress: hospital?.address || '',
+    date: appointment.date,
+    timeSlot: appointment.timeSlot,
+    appointmentStatus: appointment.status
+  };
+
   const queue = await Queue.findOne({
-    doctorId: appointment.doctorId,
-    hospitalId: appointment.hospitalId,
+    doctorId: doctorProfile?._id || appointment.doctorId,
+    hospitalId: hospital?._id || appointment.hospitalId,
     date: appointment.date
   });
 
   if (!queue) {
     return {
+      ...details,
       currentToken: 0,
       tokenNumber: appointment.tokenNumber,
       queuePosition: 0,
@@ -128,11 +148,11 @@ const getPatientQueueStatus = async (appointmentId) => {
   const estimatedWaitTime = ahead.length * avgMinutes;
 
   return {
+    ...details,
     currentToken: queue.currentToken,
     tokenNumber: myEntry?.tokenNumber || appointment.tokenNumber,
     queuePosition,
     estimatedWaitTime,
-    doctorId: queue.doctorId,
     totalTokens: queue.totalTokens
   };
 };
@@ -237,6 +257,60 @@ const completeAppointmentInQueue = async ({ appointmentId }) => {
   return { queue, appointment };
 };
 
+const cancelAppointmentInQueue = async ({ appointmentId }) => {
+  const appointment = await Appointment.findById(appointmentId);
+  if (!appointment) throw new Error('Appointment not found');
+
+  const queue = await Queue.findOne({
+    doctorId: appointment.doctorId,
+    hospitalId: appointment.hospitalId,
+    date: appointment.date
+  });
+
+  appointment.status = 'cancelled';
+  appointment.queuePosition = 0;
+  appointment.estimatedWaitTime = 0;
+  await appointment.save();
+
+  if (!queue) {
+    return { queue: null, appointment };
+  }
+
+  const entryIndex = queue.entries.findIndex((item) => String(item.appointmentId) === String(appointmentId));
+  if (entryIndex >= 0) {
+    queue.entries.splice(entryIndex, 1);
+  }
+
+  queue.entries.sort((a, b) => a.tokenNumber - b.tokenNumber);
+
+  const avgMinutes = await getAverageConsultationMinutes(appointment.doctorId);
+  const activeStatuses = ['waiting', 'called', 'in-progress'];
+
+  for (let index = 0; index < queue.entries.length; index += 1) {
+    const entry = queue.entries[index];
+    entry.tokenNumber = index + 1;
+
+    const linkedAppointment = await Appointment.findById(entry.appointmentId);
+    if (linkedAppointment) {
+      const ahead = queue.entries.filter(
+        (item) => item.tokenNumber < entry.tokenNumber && activeStatuses.includes(item.status)
+      ).length;
+      linkedAppointment.tokenNumber = entry.tokenNumber;
+      linkedAppointment.queuePosition = ahead + 1;
+      linkedAppointment.estimatedWaitTime = ahead * avgMinutes;
+      await linkedAppointment.save();
+    }
+  }
+
+  queue.totalTokens = queue.entries.length;
+  const currentlyCalled = queue.entries.find((item) => item.status === 'called' || item.status === 'in-progress');
+  queue.currentToken = currentlyCalled ? currentlyCalled.tokenNumber : 0;
+  await queue.save();
+
+  await emitQueueUpdate(queue);
+  return { queue, appointment };
+};
+
 const addWalkIn = async ({ doctorId, hospitalId, date }) => {
   const walkInSlot = `walk-in-${Date.now()}-${Math.floor(Math.random() * 10000)}`;
   const placeholderAppointment = await Appointment.create({
@@ -273,6 +347,7 @@ module.exports = {
   getPatientQueueStatus,
   callNextPatient,
   completeAppointmentInQueue,
+  cancelAppointmentInQueue,
   addWalkIn,
   resetQueue
 };

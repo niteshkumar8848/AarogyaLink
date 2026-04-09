@@ -8,6 +8,17 @@ const createHttpError = (status, message) => {
   error.status = status;
   return error;
 };
+const normalizeId = (value) => String(value?._id || value || '');
+
+const sanitizeDateAvailability = (entries = []) => {
+  const map = new Map();
+  for (const item of entries || []) {
+    const date = String(item?.date || '').trim();
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) continue;
+    map.set(date, { date, isAvailable: Boolean(item?.isAvailable) });
+  }
+  return [...map.values()].sort((a, b) => a.date.localeCompare(b.date));
+};
 
 const syncDoctorPrimaryHospital = async ({ doctor, hospitalId }) => {
   if (hospitalId === undefined) return;
@@ -23,7 +34,7 @@ const syncDoctorPrimaryHospital = async ({ doctor, hospitalId }) => {
   }
 
   const list = Array.isArray(doctor.hospitals) ? [...doctor.hospitals] : [];
-  const existingIndex = list.findIndex((item) => String(item.hospitalId) === String(hospital._id));
+  const existingIndex = list.findIndex((item) => normalizeId(item?.hospitalId) === normalizeId(hospital._id));
   if (existingIndex >= 0) {
     const [existing] = list.splice(existingIndex, 1);
     doctor.hospitals = [existing, ...list];
@@ -113,7 +124,9 @@ const createDoctor = async (req, res) => {
       doctorContactNumber,
       qualifications,
       experience,
+      appointmentPrice,
       hospitals,
+      dateAvailability,
       isAvailableToday
     } = req.body;
 
@@ -137,7 +150,9 @@ const createDoctor = async (req, res) => {
       doctorContactNumber: doctorContactNumber || phone || '',
       qualifications,
       experience,
+      appointmentPrice: Number(appointmentPrice ?? 500),
       hospitals: hospitals || [],
+      dateAvailability: sanitizeDateAvailability(dateAvailability || []),
       isAvailableToday: isAvailableToday ?? true,
       approvalStatus: 'approved',
       approvedAt: new Date(),
@@ -184,7 +199,9 @@ const updateDoctor = async (req, res) => {
       doctorContactNumber,
       qualifications,
       experience,
+      appointmentPrice,
       hospitals,
+      dateAvailability,
       isAvailableToday
     } = updates;
 
@@ -224,7 +241,9 @@ const updateDoctor = async (req, res) => {
     if (doctorContactNumber !== undefined) doctor.doctorContactNumber = doctorContactNumber;
     if (qualifications !== undefined) doctor.qualifications = qualifications;
     if (experience !== undefined) doctor.experience = experience;
+    if (appointmentPrice !== undefined) doctor.appointmentPrice = Math.max(0, Number(appointmentPrice) || 0);
     if (hospitals !== undefined) doctor.hospitals = hospitals;
+    if (dateAvailability !== undefined) doctor.dateAvailability = sanitizeDateAvailability(dateAvailability);
     if (isAvailableToday !== undefined) doctor.isAvailableToday = Boolean(isAvailableToday);
 
     if (req.user.role === 'admin' && updates.approvalStatus !== undefined) {

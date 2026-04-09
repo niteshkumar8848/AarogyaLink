@@ -14,6 +14,7 @@ import DoctorDashboardPage from './pages/DoctorDashboardPage';
 import DoctorQueuePage from './pages/DoctorQueuePage';
 import DoctorSchedulePage from './pages/DoctorSchedulePage';
 import DoctorPatientsPage from './pages/DoctorPatientsPage';
+import DoctorEarningsPage from './pages/DoctorEarningsPage';
 import AdminDashboardPage from './pages/AdminDashboardPage';
 import AdminDoctorsPage from './pages/AdminDoctorsPage';
 import AdminHospitalsPage from './pages/AdminHospitalsPage';
@@ -125,6 +126,14 @@ const App = () => {
         element={
           <ProtectedRoute allowedRoles={['doctor']}>
             <DoctorPatientsPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/doctor/earnings"
+        element={
+          <ProtectedRoute allowedRoles={['doctor']}>
+            <DoctorEarningsPage />
           </ProtectedRoute>
         }
       />

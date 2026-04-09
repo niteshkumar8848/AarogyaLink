@@ -13,6 +13,8 @@ const PatientAppointmentsPage = () => {
 
   useEffect(() => {
     load();
+    const intervalId = setInterval(load, 8000);
+    return () => clearInterval(intervalId);
   }, []);
 
   const cancelAppointment = async (id) => {

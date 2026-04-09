@@ -3,11 +3,39 @@ import AppShell from '../components/common/AppShell';
 import QueueStatusWidget from '../components/patient/QueueStatusWidget';
 import { appointmentAPI, queueAPI } from '../services/api';
 
+const ACTIVE_STATUSES = ['pending', 'confirmed', 'in-progress'];
+
+const toSortableTime = (value) => {
+  const [start] = String(value || '').split('-');
+  const [h = '0', m = '0'] = start.split(':');
+  return Number(h) * 60 + Number(m);
+};
+
+const pickActiveAppointment = (appointments = []) => {
+  const active = appointments.filter((item) => ACTIVE_STATUSES.includes(item.status));
+  if (!active.length) return null;
+
+  const inProgress = active.find((item) => item.status === 'in-progress');
+  if (inProgress) return inProgress;
+
+  const upcoming = active
+    .filter((item) => item.status === 'confirmed' || item.status === 'pending')
+    .sort((a, b) => {
+      if (a.date !== b.date) return String(a.date).localeCompare(String(b.date));
+      return toSortableTime(a.timeSlot) - toSortableTime(b.timeSlot);
+    });
+  return upcoming[0] || active[0];
+};
+
 const PatientDashboardPage = () => {
   const [appointments, setAppointments] = useState([]);
   const [queue, setQueue] = useState(null);
   const upcomingAppointments = appointments
-    .filter((item) => ['pending', 'confirmed', 'in-progress'].includes(item.status))
+    .filter((item) => ACTIVE_STATUSES.includes(item.status))
+    .sort((a, b) => {
+      if (a.date !== b.date) return String(a.date).localeCompare(String(b.date));
+      return toSortableTime(a.timeSlot) - toSortableTime(b.timeSlot);
+    })
     .slice(0, 5);
 
   useEffect(() => {
@@ -15,17 +43,22 @@ const PatientDashboardPage = () => {
       try {
         const { data } = await appointmentAPI.listMine();
         setAppointments(data);
-        const active = data.find((a) => ['confirmed', 'in-progress', 'pending'].includes(a.status));
+        const active = pickActiveAppointment(data);
         if (active) {
           const queueRes = await queueAPI.patientStatus(active._id);
           setQueue(queueRes.data);
+        } else {
+          setQueue(null);
         }
       } catch {
         setAppointments([]);
+        setQueue(null);
       }
     };
 
     load();
+    const intervalId = setInterval(load, 8000);
+    return () => clearInterval(intervalId);
   }, []);
 
   return (

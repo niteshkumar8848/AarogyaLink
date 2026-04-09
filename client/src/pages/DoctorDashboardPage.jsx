@@ -80,6 +80,9 @@ const DoctorDashboardPage = () => {
                 <p className="font-medium text-ink">{appointment.patientId?.userId?.name || 'Walk-in Patient'}</p>
                 <p className="text-sm text-teal-700">{appointment.date} · {appointment.timeSlot} · Token #{appointment.tokenNumber || '-'}</p>
                 <p className="text-sm">Status: {appointment.status}</p>
+                <p className="text-sm text-slate-700">
+                  Notes: {appointment.notes ? appointment.notes : 'No notes provided by patient.'}
+                </p>
                 {appointment.status !== 'completed' && appointment.status !== 'cancelled' ? (
                   <button
                     onClick={() => markTreatmentDone(appointment._id)}

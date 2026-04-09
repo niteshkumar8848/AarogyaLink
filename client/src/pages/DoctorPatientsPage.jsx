@@ -45,6 +45,7 @@ const DoctorPatientsPage = () => {
             <p className="font-semibold">{appointment.patientId?.userId?.name || 'Walk-in Patient'}</p>
             <p className="text-sm text-teal-700">{appointment.date} · {appointment.timeSlot} · Token #{appointment.tokenNumber || '-'}</p>
             <p className="text-sm">Status: {appointment.status}</p>
+            <p className="text-sm text-slate-700">Notes: {appointment.notes || 'No notes provided by patient.'}</p>
           </article>
         ))}
       </div>

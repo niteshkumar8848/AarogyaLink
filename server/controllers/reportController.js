@@ -1,4 +1,4 @@
-const { getFlowReport, getConsultationStats, getQueueMetrics } = require('../services/reportService');
+const { getFlowReport, getConsultationStats, getQueueMetrics, getRevenueReport } = require('../services/reportService');
 
 const flowReport = async (req, res) => {
   try {
@@ -27,8 +27,18 @@ const queueMetricsReport = async (req, res) => {
   }
 };
 
+const revenueReport = async (req, res) => {
+  try {
+    const data = await getRevenueReport();
+    return res.json(data);
+  } catch (error) {
+    return res.status(500).json({ message: 'Failed to generate revenue report', error: error.message });
+  }
+};
+
 module.exports = {
   flowReport,
   consultationReport,
-  queueMetricsReport
+  queueMetricsReport,
+  revenueReport
 };

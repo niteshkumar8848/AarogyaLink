@@ -63,8 +63,84 @@ const getQueueMetrics = async () => {
   };
 };
 
+const getRevenueReport = async () => {
+  const paidMatch = { paymentStatus: 'paid', status: { $ne: 'cancelled' } };
+
+  const [overviewAgg = { totalRevenue: 0, totalPaidAppointments: 0 }, byDoctor = [], daily = []] = await Promise.all([
+    Appointment.aggregate([
+      { $match: paidMatch },
+      {
+        $group: {
+          _id: null,
+          totalRevenue: { $sum: '$appointmentPrice' },
+          totalPaidAppointments: { $sum: 1 }
+        }
+      },
+      { $project: { _id: 0, totalRevenue: 1, totalPaidAppointments: 1 } }
+    ]).then((rows) => rows[0]),
+    Appointment.aggregate([
+      { $match: paidMatch },
+      {
+        $group: {
+          _id: '$doctorId',
+          revenue: { $sum: '$appointmentPrice' },
+          appointments: { $sum: 1 }
+        }
+      },
+      {
+        $lookup: {
+          from: 'doctors',
+          localField: '_id',
+          foreignField: '_id',
+          as: 'doctor'
+        }
+      },
+      { $unwind: { path: '$doctor', preserveNullAndEmptyArrays: true } },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'doctor.userId',
+          foreignField: '_id',
+          as: 'doctorUser'
+        }
+      },
+      { $unwind: { path: '$doctorUser', preserveNullAndEmptyArrays: true } },
+      {
+        $project: {
+          _id: 0,
+          doctorId: '$_id',
+          doctorName: '$doctorUser.name',
+          specialization: '$doctor.specialization',
+          revenue: 1,
+          appointments: 1
+        }
+      },
+      { $sort: { revenue: -1 } }
+    ]),
+    Appointment.aggregate([
+      { $match: paidMatch },
+      {
+        $group: {
+          _id: '$date',
+          revenue: { $sum: '$appointmentPrice' },
+          appointments: { $sum: 1 }
+        }
+      },
+      { $project: { _id: 0, date: '$_id', revenue: 1, appointments: 1 } },
+      { $sort: { date: 1 } }
+    ])
+  ]);
+
+  return {
+    overview: overviewAgg,
+    byDoctor,
+    daily
+  };
+};
+
 module.exports = {
   getFlowReport,
   getConsultationStats,
-  getQueueMetrics
+  getQueueMetrics,
+  getRevenueReport
 };

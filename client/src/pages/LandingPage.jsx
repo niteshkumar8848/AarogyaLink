@@ -104,12 +104,28 @@ const LandingPage = () => {
           <div className="rounded-3xl border border-teal-100 bg-white p-6 shadow-card">
             <div className="rounded-2xl bg-teal-50 p-4">
               <p className="text-sm font-semibold text-teal-700">Queue Tracker Preview</p>
-              <p className="mt-2 text-4xl font-bold text-primary">Token #42</p>
-              <div className="mt-4 grid gap-2 text-sm text-teal-900/80 sm:grid-cols-2">
-                <p>Current Token: <strong>38</strong></p>
-                <p>Your Position: <strong>4</strong></p>
-                <p>Estimated Wait: <strong>18 min</strong></p>
-                <p>Doctor Status: <strong>Available</strong></p>
+              <div className="mt-3 rounded-xl border border-teal-100 bg-white p-3">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-full bg-teal-100 font-semibold text-teal-700">
+                    G
+                  </div>
+                  <div>
+                    <p className="font-semibold text-ink">Dr. Gobinda Bhattarai</p>
+                    <p className="text-xs text-teal-700">Cardiology · AarogyaLink Central Hospital</p>
+                  </div>
+                </div>
+                <div className="mt-3 grid gap-1 text-xs text-teal-900 sm:grid-cols-2">
+                  <p><span className="font-medium">Date:</span> 2026-04-10</p>
+                  <p><span className="font-medium">Time:</span> 09:00-09:30</p>
+                  <p><span className="font-medium">Status:</span> Confirmed</p>
+                  <p><span className="font-medium">Hospital:</span> Kathmandu</p>
+                </div>
+              </div>
+              <div className="mt-4 grid gap-2 text-sm text-teal-900/90 sm:grid-cols-2">
+                <p className="rounded-lg border border-teal-100 bg-white px-3 py-2">Your Token: <strong>#42</strong></p>
+                <p className="rounded-lg border border-teal-100 bg-white px-3 py-2">Current Token: <strong>38</strong></p>
+                <p className="rounded-lg border border-teal-100 bg-white px-3 py-2">Queue Position: <strong>4</strong></p>
+                <p className="rounded-lg border border-teal-100 bg-white px-3 py-2">Estimated Wait: <strong>18 min</strong></p>
               </div>
             </div>
             <div className="mt-4 grid gap-3 sm:grid-cols-2">
@@ -149,25 +165,6 @@ const LandingPage = () => {
           ))}
         </section>
 
-        <section className="mt-16 rounded-3xl border border-teal-200 bg-gradient-to-r from-teal-700 to-teal-600 p-8 text-white shadow-card">
-          <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-wider text-teal-100">Get Started</p>
-              <h2 className="mt-2 text-2xl font-bold md:text-3xl">Adopt a more organized and transparent patient flow.</h2>
-              <p className="mt-2 text-sm text-teal-50/90">
-                Create an account to begin appointment booking, queue tracking, and role-based hospital operations.
-              </p>
-            </div>
-            <div className="flex flex-wrap gap-3">
-              <Link to="/register" className="rounded-lg bg-white px-5 py-3 text-sm font-semibold text-teal-700 hover:bg-teal-50">
-                Register Now
-              </Link>
-              <Link to="/login" className="rounded-lg border border-teal-200 px-5 py-3 text-sm font-semibold text-white hover:bg-teal-500/40">
-                Login
-              </Link>
-            </div>
-          </div>
-        </section>
       </div>
       <Footer />
     </div>

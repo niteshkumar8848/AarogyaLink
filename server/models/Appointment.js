@@ -16,6 +16,18 @@ const appointmentSchema = new mongoose.Schema(
     priority: { type: String, enum: ['normal', 'emergency'], default: 'normal' },
     queuePosition: { type: Number, default: 0 },
     estimatedWaitTime: { type: Number, default: 0 },
+    appointmentPrice: { type: Number, default: 0, min: 0 },
+    paymentStatus: {
+      type: String,
+      enum: ['pending', 'paid', 'failed'],
+      default: 'pending'
+    },
+    paymentMethod: {
+      type: String,
+      enum: ['esewa', 'khalti', 'mobile_banking']
+    },
+    paymentTransactionId: { type: String, default: '' },
+    paidAt: Date,
     notes: String,
     calledAt: Date,
     completedAt: Date

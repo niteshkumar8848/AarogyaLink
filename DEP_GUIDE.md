@@ -34,14 +34,14 @@ Example:
 https://your-api.onrender.com
 ```
 
-6. Deploy frontend on Vercel.
+6. Deploy frontend as a Render Static Site.
 
 - Root directory: `client`
-- Framework: `Vite`
-- Build command: `npm run build`
-- Output directory: `dist`
+- Build command: `npm install && npm run build`
+- Publish directory: `dist`
+- Rewrite rule: `/*` -> `/index.html` (Action: Rewrite)
 
-7. Add frontend environment variable in Vercel.
+7. Add frontend environment variable in Render.
 
 ```env
 VITE_API_URL=https://your-api.onrender.com/api
@@ -55,7 +55,7 @@ Example:
 https://your-app.vercel.app
 ```
 
-9. Update backend `CLIENT_URL` with final frontend URL.
+9. Update backend `CLIENT_URL` with final frontend URL (without trailing slash).
 
 ```env
 CLIENT_URL=https://your-app.vercel.app
@@ -71,4 +71,4 @@ CLIENT_URL=https://your-app.vercel.app
 - Queue updates
 - Complete treatment flow
 - Notifications and dashboards
-
+- Refresh on nested routes (e.g. `/register`, `/login`, `/patient/dashboard`) to verify SPA fallback

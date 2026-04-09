@@ -194,6 +194,8 @@ You can override with env vars:
   - Admin approval is required (`pending` doctor accounts cannot login).
 - Appointment booking returns 500:
   - Check backend logs and confirm MongoDB is running and reachable.
+- Frontend route shows `Not Found` after refresh in production:
+  - Configure a static-site rewrite to serve `index.html` for all paths (`/* -> /index.html`).
 
 ## License
 

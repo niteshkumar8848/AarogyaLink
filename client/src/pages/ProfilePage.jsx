@@ -21,6 +21,7 @@ const ProfilePage = () => {
     doctorContactNumber: '',
     qualifications: '',
     experience: 0,
+    appointmentPrice: 500,
     isAvailableToday: true
   });
   const [hospitals, setHospitals] = useState([]);
@@ -53,6 +54,7 @@ const ProfilePage = () => {
       doctorContactNumber: roleProfile?.doctorContactNumber || user.phone || '',
       qualifications: roleProfile?.qualifications || '',
       experience: roleProfile?.experience || 0,
+      appointmentPrice: roleProfile?.appointmentPrice ?? 500,
       isAvailableToday: roleProfile?.isAvailableToday ?? true
     }));
   }, [user, roleProfile]);
@@ -131,6 +133,7 @@ const ProfilePage = () => {
         payload.doctorContactNumber = form.doctorContactNumber;
         payload.qualifications = form.qualifications;
         payload.experience = Number(form.experience || 0);
+        payload.appointmentPrice = Math.max(0, Number(form.appointmentPrice || 0));
         payload.isAvailableToday = Boolean(form.isAvailableToday);
       }
 
@@ -197,6 +200,7 @@ const ProfilePage = () => {
             <input className="rounded-lg border border-teal-200 px-3 py-2" value={form.doctorContactNumber} onChange={(e) => setForm((prev) => ({ ...prev, doctorContactNumber: e.target.value }))} placeholder="Doctor contact number" />
             <input className="rounded-lg border border-teal-200 px-3 py-2" value={form.qualifications} onChange={(e) => setForm((prev) => ({ ...prev, qualifications: e.target.value }))} placeholder="Qualifications" />
             <input className="rounded-lg border border-teal-200 px-3 py-2" type="number" min="0" value={form.experience} onChange={(e) => setForm((prev) => ({ ...prev, experience: e.target.value }))} placeholder="Experience" />
+            <input className="rounded-lg border border-teal-200 px-3 py-2" type="number" min="0" value={form.appointmentPrice} onChange={(e) => setForm((prev) => ({ ...prev, appointmentPrice: e.target.value }))} placeholder="Appointment price (NPR)" />
             <label className="flex items-center gap-2 rounded-lg border border-teal-200 px-3 py-2 text-sm">
               <input type="checkbox" checked={Boolean(form.isAvailableToday)} onChange={(e) => setForm((prev) => ({ ...prev, isAvailableToday: e.target.checked }))} />
               Available today

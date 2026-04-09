@@ -21,7 +21,10 @@ const getQueueByDoctorDate = async (req, res) => {
     }
 
     const queue = await Queue.findOne({ doctorId: req.params.doctorId, date: req.params.date })
-      .populate('entries.appointmentId');
+      .populate({
+        path: 'entries.appointmentId',
+        populate: { path: 'patientId', populate: { path: 'userId', select: 'name' } }
+      });
     if (!queue) return res.json({ currentToken: 0, totalTokens: 0, entries: [] });
 
     return res.json(queue);

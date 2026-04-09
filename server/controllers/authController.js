@@ -11,6 +11,7 @@ const createHttpError = (status, message) => {
   error.status = status;
   return error;
 };
+const normalizeId = (value) => String(value?._id || value || '');
 
 const syncDoctorPrimaryHospital = async ({ doctor, hospitalId }) => {
   if (hospitalId === undefined) return;
@@ -26,7 +27,7 @@ const syncDoctorPrimaryHospital = async ({ doctor, hospitalId }) => {
   }
 
   const list = Array.isArray(doctor.hospitals) ? [...doctor.hospitals] : [];
-  const existingIndex = list.findIndex((item) => String(item.hospitalId) === String(hospital._id));
+  const existingIndex = list.findIndex((item) => normalizeId(item?.hospitalId) === normalizeId(hospital._id));
   if (existingIndex >= 0) {
     const [existing] = list.splice(existingIndex, 1);
     doctor.hospitals = [existing, ...list];
@@ -88,7 +89,8 @@ const registerDoctor = async (req, res) => {
       hospitalId,
       doctorContactNumber,
       qualifications,
-      experience
+      experience,
+      appointmentPrice
     } = req.body;
 
     const exists = await User.findOne({ email: email.toLowerCase() });
@@ -111,6 +113,7 @@ const registerDoctor = async (req, res) => {
       doctorContactNumber: doctorContactNumber || phone || '',
       qualifications: qualifications || '',
       experience: Number(experience || 0),
+      appointmentPrice: Math.max(0, Number(appointmentPrice ?? 500) || 0),
       hospitals: [],
       isAvailableToday: false,
       approvalStatus: 'pending'
@@ -226,6 +229,7 @@ const updateMe = async (req, res) => {
       doctorContactNumber,
       qualifications,
       experience,
+      appointmentPrice,
       isAvailableToday
     } = req.body;
 
@@ -282,6 +286,7 @@ const updateMe = async (req, res) => {
         if (doctorContactNumber !== undefined) doctor.doctorContactNumber = doctorContactNumber;
         if (qualifications !== undefined) doctor.qualifications = qualifications;
         if (experience !== undefined) doctor.experience = experience;
+        if (appointmentPrice !== undefined) doctor.appointmentPrice = Math.max(0, Number(appointmentPrice) || 0);
         if (isAvailableToday !== undefined) doctor.isAvailableToday = Boolean(isAvailableToday);
         await syncDoctorPrimaryHospital({ doctor, hospitalId });
         await doctor.save();

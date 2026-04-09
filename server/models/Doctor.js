@@ -25,6 +25,14 @@ const doctorHospitalSchema = new mongoose.Schema(
   { _id: false }
 );
 
+const dateAvailabilitySchema = new mongoose.Schema(
+  {
+    date: { type: String, required: true }, // YYYY-MM-DD
+    isAvailable: { type: Boolean, required: true, default: true }
+  },
+  { _id: false }
+);
+
 const doctorSchema = new mongoose.Schema(
   {
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true, unique: true },
@@ -34,7 +42,9 @@ const doctorSchema = new mongoose.Schema(
     doctorContactNumber: { type: String, default: '', trim: true },
     qualifications: { type: String },
     experience: { type: Number, default: 0 },
+    appointmentPrice: { type: Number, default: 500, min: 0 },
     hospitals: [doctorHospitalSchema],
+    dateAvailability: [dateAvailabilitySchema],
     isAvailableToday: { type: Boolean, default: true },
     rating: { type: Number, default: 0, min: 0, max: 5 },
     approvalStatus: {

@@ -19,14 +19,32 @@ const PatientDoctorProfilePage = () => {
   return (
     <AppShell title={`Dr. ${doctor.userId?.name}`}>
       <div className="grid gap-4 lg:grid-cols-3">
-        <div className="lg:col-span-2 rounded-2xl bg-white p-5 shadow-card">
-          <p className="text-sm text-teal-600">Specialization</p>
-          <p className="text-lg font-semibold">{doctor.specialization}</p>
-          <p className="mt-2 text-sm">Hospital Name: {doctor.hospitalName || doctor.hospitals?.[0]?.hospitalId?.name || 'N/A'}</p>
-          <p className="text-sm">Location: {doctor.location || doctor.hospitals?.[0]?.hospitalId?.address || 'N/A'}</p>
-          <p className="text-sm">Doctor Contact Number: {doctor.doctorContactNumber || doctor.userId?.phone || 'N/A'}</p>
-          <p className="mt-2 text-sm">Qualifications: {doctor.qualifications || 'N/A'}</p>
-          <p className="text-sm">Experience: {doctor.experience || 0} years</p>
+        <div className="lg:col-span-2 rounded-2xl border border-teal-100 bg-white p-6 shadow-card">
+          <div className="mb-5 flex items-center gap-4">
+            {doctor.userId?.profilePhoto ? (
+              <img
+                src={doctor.userId.profilePhoto}
+                alt={`Dr. ${doctor.userId?.name || 'Doctor'}`}
+                className="h-20 w-20 rounded-full border border-teal-200 object-cover"
+              />
+            ) : (
+              <div className="flex h-20 w-20 items-center justify-center rounded-full bg-teal-100 text-2xl font-semibold text-teal-700">
+                {(doctor.userId?.name || 'D').charAt(0).toUpperCase()}
+              </div>
+            )}
+            <div>
+              <p className="text-2xl font-semibold text-ink">Dr. {doctor.userId?.name}</p>
+              <p className="text-sm text-teal-700">{doctor.specialization}</p>
+            </div>
+          </div>
+          <div className="grid gap-2 rounded-xl border border-teal-100 bg-teal-50/40 p-4 text-sm md:grid-cols-2">
+            <p><span className="font-medium text-teal-900">Hospital:</span> {doctor.hospitalName || doctor.hospitals?.[0]?.hospitalId?.name || 'N/A'}</p>
+            <p><span className="font-medium text-teal-900">Location:</span> {doctor.location || doctor.hospitals?.[0]?.hospitalId?.address || 'N/A'}</p>
+            <p><span className="font-medium text-teal-900">Contact:</span> {doctor.doctorContactNumber || doctor.userId?.phone || 'N/A'}</p>
+            <p><span className="font-medium text-teal-900">Appointment Price:</span> NPR {Number(doctor.appointmentPrice ?? 500).toLocaleString()}</p>
+            <p><span className="font-medium text-teal-900">Qualifications:</span> {doctor.qualifications || 'N/A'}</p>
+            <p><span className="font-medium text-teal-900">Experience:</span> {doctor.experience || 0} years</p>
+          </div>
         </div>
         <BookingWidget doctor={doctor} hospitals={(doctor.hospitals || []).map((h) => h.hospitalId).filter(Boolean)} />
       </div>

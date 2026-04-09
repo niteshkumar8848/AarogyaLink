@@ -16,7 +16,8 @@ const navByRole = {
     { to: '/doctor/dashboard', label: 'Dashboard' },
     { to: '/doctor/queue', label: 'Queue' },
     { to: '/doctor/schedule', label: 'Schedule' },
-    { to: '/doctor/patients', label: 'Patients' }
+    { to: '/doctor/patients', label: 'Patients' },
+    { to: '/doctor/earnings', label: 'Earnings' }
   ],
   admin: [
     { to: '/admin/dashboard', label: 'Dashboard' },

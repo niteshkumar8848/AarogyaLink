@@ -61,8 +61,10 @@ export const hospitalAPI = {
 
 export const appointmentAPI = {
   listMine: () => api.get('/appointments'),
+  availability: (doctorId, params) => api.get(`/appointments/availability/${doctorId}`, { params }),
   book: (payload) => api.post('/appointments', payload),
   update: (id, payload) => api.put(`/appointments/${id}`, payload),
+  doctorEarnings: (doctorId) => api.get(`/appointments/doctor/${doctorId}/earnings`),
   doctorToday: (doctorId, date) => api.get(`/appointments/doctor/${doctorId}`, { params: { date } }),
   listAdmin: (params) => api.get('/appointments/admin', { params })
 };
@@ -85,7 +87,8 @@ export const notificationAPI = {
 export const reportAPI = {
   flow: (params) => api.get('/reports/flow', { params }),
   consultations: () => api.get('/reports/consultations'),
-  queueMetrics: () => api.get('/reports/queue-metrics')
+  queueMetrics: () => api.get('/reports/queue-metrics'),
+  revenue: () => api.get('/reports/revenue')
 };
 
 export default api;
