@@ -17,7 +17,6 @@ const RegisterPage = () => {
     gender: 'male',
     specialization: '',
     hospitalId: '',
-    doctorContactNumber: '',
     qualifications: '',
     experience: 0
   });
@@ -49,7 +48,7 @@ const RegisterPage = () => {
           phone: form.phone,
           specialization: form.specialization,
           hospitalId: form.hospitalId,
-          doctorContactNumber: form.doctorContactNumber,
+          doctorContactNumber: form.phone,
           qualifications: form.qualifications,
           experience: Number(form.experience || 0)
         });
@@ -153,7 +152,7 @@ const RegisterPage = () => {
             </label>
 
             <label className="block text-sm font-medium text-teal-800">
-              Phone
+              {form.role === 'doctor' ? 'Phone (Doctor Contact Number)' : 'Phone'}
               <input
                 className="mt-1 w-full rounded-lg border border-teal-200 px-3 py-2"
                 placeholder="Phone number"
@@ -207,15 +206,6 @@ const RegisterPage = () => {
                   {hospitals.length === 0 ? (
                     <p className="mt-1 text-xs text-amber-700">No hospitals are registered yet. Please contact admin.</p>
                   ) : null}
-                </label>
-                <label className="block text-sm font-medium text-teal-800">
-                  Doctor Contact Number
-                  <input
-                    className="mt-1 w-full rounded-lg border border-teal-200 px-3 py-2"
-                    placeholder="Enter doctor contact number"
-                    value={form.doctorContactNumber}
-                    onChange={(e) => setForm((p) => ({ ...p, doctorContactNumber: e.target.value }))}
-                  />
                 </label>
                 <label className="block text-sm font-medium text-teal-800">
                   Qualifications
