@@ -1,11 +1,25 @@
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const DoctorCard = ({ doctor }) => {
+  const navigate = useNavigate();
   const doctorName = doctor.userId?.name || 'Doctor';
   const doctorPhoto = doctor.userId?.profilePhoto;
+  const profilePath = `/patient/doctors/${doctor._id}`;
 
   return (
-    <div className="rounded-2xl bg-white p-4 shadow-card">
+    <div
+      className="cursor-pointer rounded-2xl bg-white p-4 shadow-card transition hover:-translate-y-0.5 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-teal-300"
+      role="button"
+      tabIndex={0}
+      onClick={() => navigate(profilePath)}
+      onKeyDown={(event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          navigate(profilePath);
+        }
+      }}
+      aria-label={`Open booking profile for Dr. ${doctorName}`}
+    >
       <div className="mb-3 flex items-center gap-3">
         {doctorPhoto ? (
           <img src={doctorPhoto} alt={`Dr. ${doctorName}`} className="h-14 w-14 rounded-full object-cover" />
@@ -25,9 +39,9 @@ const DoctorCard = ({ doctor }) => {
       <p className="text-sm">Appointment Price: NPR {Number(doctor.appointmentPrice ?? 500).toLocaleString()}</p>
       <p className="mt-1 text-sm">Experience: {doctor.experience || 0} years</p>
       <p className="text-sm">Availability: {doctor.isAvailableToday ? 'Available' : 'Not available today'}</p>
-      <Link to={`/patient/doctors/${doctor._id}`} className="mt-3 inline-block rounded-lg bg-primary px-3 py-1.5 text-sm text-white">
-        View Profile
-      </Link>
+      <div className="mt-3 inline-block rounded-lg bg-primary px-3 py-1.5 text-sm text-white">
+        Book Appointment
+      </div>
     </div>
   );
 };
