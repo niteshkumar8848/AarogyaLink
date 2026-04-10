@@ -93,6 +93,7 @@ You can override with env vars:
 
 - `DEFAULT_ADMIN_EMAIL`, `DEFAULT_ADMIN_PASSWORD`
 - `DEFAULT_DOCTOR_EMAIL`, `DEFAULT_DOCTOR_PASSWORD`
+- `SEED_DEFAULT_DOCTOR` (`false` by default in production, set `true` only when you explicitly want demo doctor seeding)
 
 ## Role Workflows
 

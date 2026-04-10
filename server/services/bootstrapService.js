@@ -3,6 +3,17 @@ const User = require('../models/User');
 const Doctor = require('../models/Doctor');
 const Hospital = require('../models/Hospital');
 
+const parseBoolean = (value) => {
+  if (value === undefined || value === null) return null;
+  return ['1', 'true', 'yes', 'on'].includes(String(value).trim().toLowerCase());
+};
+
+const shouldSeedDefaultDoctor = () => {
+  const explicit = parseBoolean(process.env.SEED_DEFAULT_DOCTOR);
+  if (explicit !== null) return explicit;
+  return process.env.NODE_ENV !== 'production';
+};
+
 const buildDefaultSchedule = () => [
   {
     day: 'Monday',
@@ -118,7 +129,11 @@ const seedDefaultAccounts = async () => {
     { $set: { approvalStatus: 'approved', approvedAt: new Date() } }
   );
   await ensureDefaultAdmin();
-  await ensureDefaultDoctor();
+  if (shouldSeedDefaultDoctor()) {
+    await ensureDefaultDoctor();
+  } else {
+    console.log('[bootstrap] Skipping default doctor seed for this environment.');
+  }
 };
 
 module.exports = {
