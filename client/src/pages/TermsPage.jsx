@@ -4,99 +4,161 @@ import Logo from '../components/common/Logo';
 
 const sections = [
   {
-    title: '1. Acceptance of Terms',
+    title: 'Acceptance of Terms',
+    image: 'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&w=200&q=60',
     points: [
-      'By accessing or using AarogyaLink, you agree to comply with these Terms & Conditions.',
-      'If you do not agree with these terms, please discontinue use of the platform immediately.',
-      'These terms apply to patients, doctors, administrators, and any authorized healthcare staff using the system.'
+      'By accessing AarogyaLink, you agree to comply with all platform policies and legal terms.',
+      'If you do not agree, you must discontinue use immediately.',
+      'These terms apply to patients, doctors, administrators, and healthcare staff.'
     ]
   },
   {
-    title: '2. Platform Scope',
+    title: 'Platform Scope',
+    image: 'https://images.unsplash.com/photo-1584982751601-97dcc096659c?auto=format&fit=crop&w=200&q=60',
     points: [
-      'AarogyaLink provides digital appointment scheduling, queue tracking, and operational workflow tools.',
-      'The platform does not provide medical diagnosis, treatment, or emergency medical intervention.',
-      'Clinical responsibility remains with licensed healthcare providers and registered medical institutions.'
+      'AarogyaLink provides appointment scheduling, queue tracking, and workflow tools.',
+      'We do not provide diagnosis, treatment, or emergency services.',
+      'Medical responsibility remains with certified healthcare professionals.'
     ]
   },
   {
-    title: '3. Account Responsibilities',
+    title: 'Account Responsibilities',
+    image: 'https://images.unsplash.com/photo-1555949963-aa79dcee981c?auto=format&fit=crop&w=200&q=60',
     points: [
-      'Users must provide accurate, current, and complete account information.',
-      'You are responsible for maintaining the confidentiality of your login credentials.',
-      'You must promptly report unauthorized account use, suspicious activity, or data access concerns.'
+      'Provide accurate and up-to-date account information.',
+      'Maintain confidentiality of login credentials.',
+      'Report unauthorized access or suspicious activity immediately.'
     ]
   },
   {
-    title: '4. Acceptable Use',
+    title: 'Acceptable Use Policy',
+    image: 'https://images.unsplash.com/photo-1528747045269-390fe33c19f2?auto=format&fit=crop&w=200&q=60',
     points: [
-      'Users must not submit false appointments, spam requests, or fraudulent patient records.',
-      'Attempting unauthorized access, role escalation, or system abuse is strictly prohibited.',
-      'Hospitals and admins are expected to manage records responsibly and in compliance with applicable policy.'
+      'Do not create fake bookings or submit misleading information.',
+      'Unauthorized system access or misuse is strictly prohibited.',
+      'Admins must ensure compliance with healthcare policies.'
     ]
   },
   {
-    title: '5. Service Availability and Changes',
+    title: 'Service Availability',
+    image: 'https://images.unsplash.com/photo-1581092335397-9583eb92d232?auto=format&fit=crop&w=200&q=60',
     points: [
-      'The platform may undergo maintenance, updates, or temporary downtime for operational improvements.',
-      'Features and workflows may be updated to meet healthcare operations, compliance, and security needs.',
-      'We will make reasonable efforts to minimize service disruption and preserve data integrity.'
+      'The platform may undergo maintenance or updates.',
+      'Features may evolve to improve healthcare workflows.',
+      'We aim to minimize downtime and ensure data integrity.'
     ]
   },
   {
-    title: '6. Limitation of Liability',
+    title: 'Limitation of Liability',
+    image: 'https://images.unsplash.com/photo-1508385082359-f38ae991e8f2?auto=format&fit=crop&w=200&q=60',
     points: [
-      'AarogyaLink is provided as a healthcare operations platform and not a substitute for medical judgment.',
-      'We are not liable for clinical decisions, treatment outcomes, or emergency response delays.',
-      'Users and institutions remain responsible for local operational, legal, and regulatory compliance.'
+      'AarogyaLink is not responsible for medical decisions or outcomes.',
+      'We are not liable for delays in treatment or emergencies.',
+      'Users must comply with local laws and healthcare regulations.'
     ]
   },
   {
-    title: '7. Suspension and Termination',
+    title: 'Suspension & Termination',
+    image: 'https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&fit=crop&w=200&q=60',
     points: [
-      'Accounts may be suspended or terminated for policy violations, misuse, or security threats.',
-      'Doctor access may require administrative approval before account activation.',
-      'Repeated abuse may result in permanent access restrictions.'
+      'Accounts may be suspended for violations or misuse.',
+      'Doctor accounts may require admin approval.',
+      'Repeated violations may result in permanent bans.'
     ]
   }
 ];
 
 const TermsPage = () => {
   return (
-    <div className="min-h-screen bg-surface">
-      <header className="border-b border-teal-100 bg-white">
+    <div className="min-h-screen bg-gradient-to-br from-teal-50 via-white to-teal-100">
+
+      {/* HEADER */}
+      <header className="sticky top-0 z-50 border-b bg-white/80 backdrop-blur">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3">
-          <Link to="/" className="flex items-center gap-2 font-semibold text-ink">
+          <Link to="/" className="flex items-center gap-2 font-semibold text-gray-800">
             <Logo className="h-9 w-9" />
-            <span>AarogyaLink</span>
+            <span className="text-lg font-bold">AarogyaLink</span>
           </Link>
+
           <div className="flex gap-2 text-sm">
-            <Link to="/login" className="rounded border border-teal-200 px-3 py-1 text-teal-700">Login</Link>
-            <Link to="/register" className="rounded bg-primary px-3 py-1 text-white">Register</Link>
+            <Link to="/login" className="rounded-lg border border-teal-300 px-4 py-1.5 text-teal-700 hover:bg-teal-50 transition">
+              Login
+            </Link>
+            <Link to="/register" className="rounded-lg bg-teal-600 px-4 py-1.5 text-white hover:bg-teal-700 transition shadow-md">
+              Register
+            </Link>
           </div>
         </div>
       </header>
 
-      <main className="mx-auto max-w-5xl px-4 py-8">
-        <h1 className="text-3xl font-bold text-ink">Terms & Conditions</h1>
-        <p className="mt-2 text-sm text-teal-800">Effective Date: April 2, 2026</p>
-        <p className="mt-4 text-sm leading-relaxed text-teal-900/80">
-          These Terms & Conditions govern access to and use of AarogyaLink for appointment scheduling, queue management,
-          and healthcare operational coordination.
-        </p>
+      {/* HERO */}
+      <section
+        className="relative flex items-center justify-center text-center text-white"
+        style={{
+          backgroundImage: `url('https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&fit=crop&w=1400&q=80')`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          height: '260px'
+        }}
+      >
+        <div className="absolute inset-0 bg-teal-900/70"></div>
+        <div className="relative z-10 px-4">
+          <h1 className="text-4xl font-bold">Terms & Conditions</h1>
+          <p className="mt-2 text-sm opacity-90">Effective Date: April 2, 2026</p>
+        </div>
+      </section>
 
-        <div className="mt-6 space-y-4">
+      {/* CONTENT */}
+      <main className="mx-auto max-w-6xl px-4 py-10">
+
+        <div className="mb-8 text-center">
+          <p className="text-gray-600 max-w-2xl mx-auto">
+            These Terms & Conditions define the rules and responsibilities for using AarogyaLink.
+            Our goal is to ensure a secure, efficient, and compliant healthcare experience.
+          </p>
+        </div>
+
+        <div className="grid gap-6 md:grid-cols-2">
           {sections.map((section) => (
-            <section key={section.title} className="rounded-2xl border border-teal-100 bg-white p-5 shadow-card">
-              <h2 className="text-lg font-semibold text-ink">{section.title}</h2>
-              <ul className="mt-3 list-disc space-y-2 pl-5 text-sm leading-relaxed text-teal-900/80">
+            <section
+              key={section.title}
+              className="rounded-2xl border border-teal-100 bg-white p-6 shadow-md hover:shadow-xl transition duration-300"
+            >
+              {/* IMAGE HEADER */}
+              <div className="flex items-center gap-4">
+                <img
+                  src={section.image}
+                  alt={section.title}
+                  className="h-14 w-14 rounded-xl object-cover shadow-sm"
+                />
+                <h2 className="text-lg font-semibold text-gray-800">
+                  {section.title}
+                </h2>
+              </div>
+
+              {/* CONTENT */}
+              <ul className="mt-4 space-y-2 text-sm text-gray-600 leading-relaxed">
                 {section.points.map((point) => (
-                  <li key={point}>{point}</li>
+                  <li key={point} className="flex gap-2">
+                    <span className="text-teal-500">•</span>
+                    {point}
+                  </li>
                 ))}
               </ul>
             </section>
           ))}
         </div>
+
+        {/* FOOT NOTE */}
+        <div className="mt-12 rounded-xl bg-teal-50 border border-teal-100 p-6 text-center">
+          <p className="text-sm text-gray-600">
+            If you have questions, please{' '}
+            <Link to="/contact" className="text-teal-600 font-medium hover:underline">
+              contact our support team
+            </Link>.
+          </p>
+        </div>
+
       </main>
 
       <CopyrightBar />
