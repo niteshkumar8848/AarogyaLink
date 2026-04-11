@@ -106,11 +106,13 @@ const LandingPage = () => {
               <p className="text-sm font-semibold text-teal-700">Queue Tracker Preview</p>
               <div className="mt-3 rounded-xl border border-teal-100 bg-white p-3">
                 <div className="flex items-center gap-3">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-full bg-teal-100 font-semibold text-teal-700">
-                    G
-                  </div>
+                  <img
+                    src="/assets/branding/demoDoctor.png"
+                    alt="Dr. Srijana Karki"
+                    className="h-11 w-11 rounded-full border border-teal-100 object-cover"
+                  />
                   <div>
-                    <p className="font-semibold text-ink">Dr. Gobinda Bhattarai</p>
+                    <p className="font-semibold text-ink">Dr. Srijana Karki</p>
                     <p className="text-xs text-teal-700">Cardiology · City Hospital Kathmandu</p>
                   </div>
                 </div>
