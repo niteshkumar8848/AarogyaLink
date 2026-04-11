@@ -32,6 +32,25 @@ const buildSlotLabel = (slot) => {
   return start && end ? `${start}-${end}` : '';
 };
 
+const isPastSlotForDate = ({ date, timeSlot, now = new Date() }) => {
+  const day = String(date || '').trim();
+  const start = String(timeSlot || '').split('-')[0]?.trim();
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(day) || !/^\d{2}:\d{2}$/.test(start || '')) return false;
+
+  const nowDate = [
+    now.getFullYear(),
+    String(now.getMonth() + 1).padStart(2, '0'),
+    String(now.getDate()).padStart(2, '0')
+  ].join('-');
+  if (day !== nowDate) return false;
+
+  const [h, m] = start.split(':').map(Number);
+  if (!Number.isFinite(h) || !Number.isFinite(m)) return false;
+  const slotStartMinutes = h * 60 + m;
+  const nowMinutes = now.getHours() * 60 + now.getMinutes();
+  return slotStartMinutes <= nowMinutes;
+};
+
 const getScheduleSlotsForDate = ({ schedule = [], date }) => {
   const dayName = getDayNameFromISODate(date);
   if (!dayName) return { dayName: null, slots: [] };
@@ -132,6 +151,9 @@ const bookAppointment = async (req, res) => {
     }
     if (!scheduleSlots.includes(timeSlot)) {
       return res.status(400).json({ message: `Selected time slot is not available on ${dayName}` });
+    }
+    if (isPastSlotForDate({ date, timeSlot })) {
+      return res.status(400).json({ message: 'Selected slot time has already passed for today' });
     }
 
     const duplicate = await Appointment.findOne({
@@ -276,7 +298,9 @@ const getDoctorAvailability = async (req, res) => {
     }).select('timeSlot');
 
     const bookedSlots = [...new Set(bookedAppointments.map((item) => item.timeSlot).filter(Boolean))];
-    const availableSlots = allSlots.filter((slot) => !bookedSlots.includes(slot));
+    const availableSlots = allSlots
+      .filter((slot) => !bookedSlots.includes(slot))
+      .filter((slot) => !isPastSlotForDate({ date, timeSlot: slot }));
 
     return res.json({
       doctorId: doctor._id,
