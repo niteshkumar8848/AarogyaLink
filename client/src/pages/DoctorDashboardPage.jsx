@@ -8,6 +8,8 @@ const getLocalDateISO = () => {
   const shifted = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
   return shifted.toISOString().slice(0, 10);
 };
+const ACTIVE_APPOINTMENT_STATUSES = new Set(['pending', 'confirmed', 'in-progress', 'waiting', 'called']);
+const normalizeStatus = (value) => String(value || '').trim().toLowerCase();
 
 const DoctorDashboardPage = () => {
   const { user } = useAuth();
@@ -15,7 +17,9 @@ const DoctorDashboardPage = () => {
   const [todayAppointments, setTodayAppointments] = useState([]);
   const [selectedDate, setSelectedDate] = useState(getLocalDateISO());
   const [updatingId, setUpdatingId] = useState('');
-  const visibleAppointments = todayAppointments.filter((appointment) => appointment.status !== 'completed');
+  const visibleAppointments = todayAppointments.filter((appointment) =>
+    ACTIVE_APPOINTMENT_STATUSES.has(normalizeStatus(appointment.status))
+  );
 
   useEffect(() => {
     const load = async () => {
@@ -84,7 +88,7 @@ const DoctorDashboardPage = () => {
                 <p className="text-sm text-slate-700">
                   Notes: {appointment.notes ? appointment.notes : 'No notes provided by patient.'}
                 </p>
-                {appointment.status !== 'completed' && appointment.status !== 'cancelled' ? (
+                {ACTIVE_APPOINTMENT_STATUSES.has(normalizeStatus(appointment.status)) ? (
                   <button
                     onClick={() => markTreatmentDone(appointment._id)}
                     disabled={updatingId === appointment._id}
