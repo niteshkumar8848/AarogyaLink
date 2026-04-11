@@ -15,6 +15,7 @@ const DoctorDashboardPage = () => {
   const [todayAppointments, setTodayAppointments] = useState([]);
   const [selectedDate, setSelectedDate] = useState(getLocalDateISO());
   const [updatingId, setUpdatingId] = useState('');
+  const visibleAppointments = todayAppointments.filter((appointment) => appointment.status !== 'completed');
 
   useEffect(() => {
     const load = async () => {
@@ -60,7 +61,7 @@ const DoctorDashboardPage = () => {
       <div className="grid gap-4 md:grid-cols-3">
         <div className="rounded-2xl bg-white p-5 shadow-card">
           <p className="text-sm text-teal-600">Appointments</p>
-          <p className="mt-2 text-3xl font-bold text-primary">{todayAppointments.length}</p>
+          <p className="mt-2 text-3xl font-bold text-primary">{visibleAppointments.length}</p>
         </div>
         <div className="rounded-2xl bg-white p-5 shadow-card">
           <p className="text-sm text-teal-600">Availability</p>
@@ -74,8 +75,8 @@ const DoctorDashboardPage = () => {
       <div className="mt-4 rounded-2xl bg-white p-5 shadow-card">
         <p className="text-sm font-semibold text-teal-700">Appointment Details</p>
         <div className="mt-3 space-y-2">
-          {todayAppointments.length ? (
-            todayAppointments.map((appointment) => (
+          {visibleAppointments.length ? (
+            visibleAppointments.map((appointment) => (
               <article key={appointment._id} className="rounded-lg border border-teal-100 p-3">
                 <p className="font-medium text-ink">{appointment.patientId?.userId?.name || 'Walk-in Patient'}</p>
                 <p className="text-sm text-teal-700">{appointment.date} · {appointment.timeSlot} · Token #{appointment.tokenNumber || '-'}</p>
