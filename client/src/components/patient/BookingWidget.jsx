@@ -12,7 +12,27 @@ const toDayFromISODate = (value) => {
   return WEEK_DAYS[index] || '';
 };
 
-const todayISO = new Date().toISOString().slice(0, 10);
+const getLocalTodayISO = () => {
+  const now = new Date();
+  const shifted = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
+  return shifted.toISOString().slice(0, 10);
+};
+
+const isPastSlotForTodayLocal = (date, slotLabel) => {
+  const selectedDate = String(date || '').trim();
+  const todayISO = getLocalTodayISO();
+  if (selectedDate !== todayISO) return false;
+
+  const slotStart = String(slotLabel || '').split('-')[0]?.trim();
+  if (!/^\d{2}:\d{2}$/.test(slotStart || '')) return false;
+  const [hour, minute] = slotStart.split(':').map(Number);
+  const now = new Date();
+  const nowMinutes = now.getHours() * 60 + now.getMinutes();
+  const slotMinutes = hour * 60 + minute;
+  return slotMinutes <= nowMinutes;
+};
+
+const filterFutureSlots = (date, slots = []) => (slots || []).filter((slot) => !isPastSlotForTodayLocal(date, slot));
 
 const BookingWidget = ({ doctor, hospitals = [] }) => {
   const navigate = useNavigate();
@@ -62,20 +82,27 @@ const BookingWidget = ({ doctor, hospitals = [] }) => {
           date: form.date,
           hospitalId: form.hospitalId
         });
+        const filteredSlots = filterFutureSlots(form.date, data.availableSlots || []);
         if (!isAlive) return;
         setAvailability({
           loading: false,
           error: '',
           day: data.day || selectedDateDay,
-          availableSlots: data.availableSlots || [],
-          note: data.note || ''
+          availableSlots: filteredSlots,
+          note:
+            data.note ||
+            (filteredSlots.length
+              ? ''
+              : form.date === getLocalTodayISO()
+                ? 'No remaining slot available for today.'
+                : '')
         });
         setForm((prev) => ({
           ...prev,
           timeSlot:
-            data.availableSlots?.includes(prev.timeSlot)
+            filteredSlots.includes(prev.timeSlot)
               ? prev.timeSlot
-              : data.availableSlots?.[0] || ''
+              : filteredSlots[0] || ''
         }));
       } catch (error) {
         if (!isAlive) return;
@@ -109,6 +136,10 @@ const BookingWidget = ({ doctor, hospitals = [] }) => {
     event.preventDefault();
     if (!form.timeSlot) {
       setMessage('Please select an available time slot first.');
+      return;
+    }
+    if (isPastSlotForTodayLocal(form.date, form.timeSlot)) {
+      setMessage('Selected slot time has already passed for today. Please choose a future slot.');
       return;
     }
     if (!payment.done) {
@@ -184,7 +215,7 @@ const BookingWidget = ({ doctor, hospitals = [] }) => {
           type="date"
           className="w-full rounded-lg border border-teal-200 px-3 py-2"
           value={form.date}
-          min={todayISO}
+          min={getLocalTodayISO()}
           onChange={(e) => setForm((prev) => ({ ...prev, date: e.target.value }))}
           required
         />
