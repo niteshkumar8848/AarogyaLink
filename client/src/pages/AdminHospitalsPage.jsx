@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import AppShell from '../components/common/AppShell';
+import SoftPopup from '../components/common/SoftPopup';
 import { hospitalAPI } from '../services/api';
 
 const initialForm = { name: '', address: '', phone: '', email: '', departments: '' };
@@ -9,6 +10,7 @@ const AdminHospitalsPage = () => {
   const [form, setForm] = useState(initialForm);
   const [error, setError] = useState('');
   const [deletingId, setDeletingId] = useState('');
+  const [hospitalToDelete, setHospitalToDelete] = useState(null);
 
   const load = async () => {
     try {
@@ -38,15 +40,14 @@ const AdminHospitalsPage = () => {
     }
   };
 
-  const removeHospital = async (hospital) => {
-    const ok = window.confirm(`Remove "${hospital.name}" from the registered hospital list?`);
-    if (!ok) return;
-
+  const removeHospital = async () => {
+    if (!hospitalToDelete?._id) return;
     setError('');
-    setDeletingId(hospital._id);
+    setDeletingId(hospitalToDelete._id);
     try {
-      await hospitalAPI.remove(hospital._id);
+      await hospitalAPI.remove(hospitalToDelete._id);
       await load();
+      setHospitalToDelete(null);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to remove hospital');
     } finally {
@@ -77,7 +78,7 @@ const AdminHospitalsPage = () => {
                 type="button"
                 className="rounded border border-red-200 px-3 py-1 text-sm font-medium text-red-600 hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60"
                 disabled={deletingId === hospital._id}
-                onClick={() => removeHospital(hospital)}
+                onClick={() => setHospitalToDelete(hospital)}
               >
                 {deletingId === hospital._id ? 'Removing...' : 'Remove'}
               </button>
@@ -85,6 +86,20 @@ const AdminHospitalsPage = () => {
           </div>
         ))}
       </div>
+      <SoftPopup
+        open={Boolean(hospitalToDelete)}
+        tone="danger"
+        title="Remove Hospital"
+        message={
+          hospitalToDelete
+            ? `Remove "${hospitalToDelete.name}" from registered hospital list?`
+            : ''
+        }
+        confirmText="Remove"
+        busy={Boolean(deletingId)}
+        onClose={() => setHospitalToDelete(null)}
+        onConfirm={removeHospital}
+      />
     </AppShell>
   );
 };

@@ -11,12 +11,6 @@ const toDayFromISODate = (value) => {
   return WEEK_DAYS[index] || '';
 };
 
-const formatSlotLabel = (slot) => {
-  const start = String(slot?.startTime || '').trim();
-  const end = String(slot?.endTime || '').trim();
-  return start && end ? `${start}-${end}` : '';
-};
-
 const todayISO = new Date().toISOString().slice(0, 10);
 
 const BookingWidget = ({ doctor, hospitals = [] }) => {
@@ -45,22 +39,6 @@ const BookingWidget = ({ doctor, hospitals = [] }) => {
   });
   const [paymentOpen, setPaymentOpen] = useState(false);
   const [message, setMessage] = useState('');
-
-  const selectedHospitalSchedule = useMemo(() => {
-    const mapped = (doctor.hospitals || []).find((item) => String(item.hospitalId?._id || item.hospitalId) === String(form.hospitalId));
-    return mapped?.schedule || [];
-  }, [doctor.hospitals, form.hospitalId]);
-
-  const weeklySchedule = useMemo(
-    () =>
-      selectedHospitalSchedule
-        .map((entry) => ({
-          day: entry.day,
-          slots: (entry.slots || []).map(formatSlotLabel).filter(Boolean)
-        }))
-        .filter((entry) => entry.day && entry.slots.length),
-    [selectedHospitalSchedule]
-  );
 
   const selectedDateDay = useMemo(() => toDayFromISODate(form.date), [form.date]);
 
@@ -187,21 +165,6 @@ const BookingWidget = ({ doctor, hospitals = [] }) => {
           </select>
         </div>
       ) : null}
-
-      <div className="rounded-lg border border-teal-100 bg-teal-50/40 p-3 text-sm text-teal-900">
-        <p className="font-medium text-ink">Weekly Availability</p>
-        {weeklySchedule.length ? (
-          <div className="mt-2 space-y-1 text-sm">
-            {weeklySchedule.map((item) => (
-              <p key={item.day} className="leading-6">
-                <span className="font-medium">{item.day}:</span> {item.slots.join(', ')}
-              </p>
-            ))}
-          </div>
-        ) : (
-          <p className="mt-1 text-xs text-teal-700">No schedule added yet for this hospital.</p>
-        )}
-      </div>
 
       <div className="space-y-1">
         <label className="text-sm font-medium text-teal-900">Appointment Date</label>

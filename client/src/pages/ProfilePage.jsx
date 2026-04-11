@@ -161,7 +161,6 @@ const ProfilePage = () => {
           <div>
             <label className="block text-sm font-medium text-teal-700">Profile Picture</label>
             <input type="file" accept="image/png,image/jpeg,image/webp" onChange={onImageChange} className="mt-1 block text-sm" />
-            <p className="text-xs text-gray-500">Stored in MongoDB as Base64 data URL for persistence across restarts/deployments.</p>
           </div>
         </div>
 
