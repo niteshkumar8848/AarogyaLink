@@ -49,6 +49,7 @@ export const doctorAPI = {
   create: (payload) => api.post('/doctors', payload),
   update: (id, payload) => api.put(`/doctors/${id}`, payload),
   updateApproval: (id, payload) => api.patch(`/doctors/${id}/approval`, payload),
+  setAllAvailableToday: () => api.patch('/doctors/availability/today/all'),
   remove: (id) => api.delete(`/doctors/${id}`)
 };
 

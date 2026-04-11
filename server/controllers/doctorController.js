@@ -302,11 +302,25 @@ const updateDoctorApproval = async (req, res) => {
   }
 };
 
+const markAllDoctorsAvailableToday = async (req, res) => {
+  try {
+    const result = await Doctor.updateMany({}, { $set: { isAvailableToday: true } });
+    return res.json({
+      message: 'All doctors marked as available today',
+      matchedCount: result.matchedCount || 0,
+      modifiedCount: result.modifiedCount || 0
+    });
+  } catch (error) {
+    return res.status(500).json({ message: 'Failed to update doctor availability', error: error.message });
+  }
+};
+
 module.exports = {
   listDoctors,
   getDoctorById,
   createDoctor,
   updateDoctor,
   deleteDoctor,
-  updateDoctorApproval
+  updateDoctorApproval,
+  markAllDoctorsAvailableToday
 };

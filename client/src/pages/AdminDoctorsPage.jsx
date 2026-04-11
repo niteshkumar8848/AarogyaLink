@@ -30,6 +30,8 @@ const AdminDoctorsPage = () => {
   const [editingDoctorId, setEditingDoctorId] = useState('');
   const [editForm, setEditForm] = useState(initialEditForm);
   const [hospitals, setHospitals] = useState([]);
+  const [bulkUpdatingAvailability, setBulkUpdatingAvailability] = useState(false);
+  const [message, setMessage] = useState('');
 
   const load = async () => {
     const { data } = await doctorAPI.list();
@@ -46,6 +48,7 @@ const AdminDoctorsPage = () => {
 
   const create = async (event) => {
     event.preventDefault();
+    setMessage('');
     await doctorAPI.create({
       ...form,
       experience: Number(form.experience || 0)
@@ -55,11 +58,13 @@ const AdminDoctorsPage = () => {
   };
 
   const remove = async (id) => {
+    setMessage('');
     await doctorAPI.remove(id);
     load();
   };
 
   const setApproval = async (id, status) => {
+    setMessage('');
     await doctorAPI.updateApproval(id, { status });
     load();
   };
@@ -86,6 +91,7 @@ const AdminDoctorsPage = () => {
   };
 
   const saveEdit = async (doctorId) => {
+    setMessage('');
     const payload = {
       name: editForm.name,
       email: editForm.email,
@@ -103,8 +109,33 @@ const AdminDoctorsPage = () => {
     load();
   };
 
+  const makeAllAvailableToday = async () => {
+    setBulkUpdatingAvailability(true);
+    setMessage('');
+    try {
+      const { data } = await doctorAPI.setAllAvailableToday();
+      setMessage(data?.message || 'All doctors marked as available today.');
+      await load();
+    } catch (error) {
+      setMessage(error.response?.data?.message || 'Failed to mark doctors available today.');
+    } finally {
+      setBulkUpdatingAvailability(false);
+    }
+  };
+
   return (
     <AppShell title="Manage Doctors">
+      <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+        <button
+          type="button"
+          onClick={makeAllAvailableToday}
+          disabled={bulkUpdatingAvailability}
+          className="rounded-lg border border-emerald-300 bg-emerald-50 px-3 py-2 text-sm font-medium text-emerald-700 hover:bg-emerald-100 disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          {bulkUpdatingAvailability ? 'Updating...' : 'Make All Doctors Available Today'}
+        </button>
+        {message ? <p className="text-sm text-teal-700">{message}</p> : null}
+      </div>
       <form onSubmit={create} className="grid gap-2 rounded-2xl bg-white p-4 shadow-card md:grid-cols-4">
         <input className="rounded border border-teal-200 px-2 py-1" placeholder="Name" value={form.name} onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))} required />
         <input className="rounded border border-teal-200 px-2 py-1" placeholder="Email" value={form.email} onChange={(e) => setForm((p) => ({ ...p, email: e.target.value }))} required />

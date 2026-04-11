@@ -61,6 +61,8 @@ const DummyPaymentScreen = ({ open, onClose, onSuccess, doctorName, doctorPhoto,
   const [mobileNumber, setMobileNumber] = useState('');
   const [bankAccountNumber, setBankAccountNumber] = useState('');
   const [authSecret, setAuthSecret] = useState('');
+  const [mobileBankingPassword, setMobileBankingPassword] = useState('');
+  const [mobileBankingMpin, setMobileBankingMpin] = useState('');
   const [transactionId, setTransactionId] = useState('');
   const [processing, setProcessing] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
@@ -71,8 +73,8 @@ const DummyPaymentScreen = ({ open, onClose, onSuccess, doctorName, doctorPhoto,
   const totalAmount = baseAmount + serviceCharge;
   const contactLabel = method === 'mobile_banking' ? 'Mobile Number' : 'Wallet / Mobile Number';
   const contactPlaceholder = method === 'mobile_banking' ? '98XXXXXXXX' : method === 'khalti' ? '98XXXXXXXX' : '98XXXXXXXX / account number';
-  const credentialLabel = method === 'esewa' ? 'Password' : method === 'khalti' ? 'MPIN' : 'Password / MPIN';
-  const credentialPlaceholder = method === 'esewa' ? 'Enter eSewa password' : method === 'khalti' ? 'Enter 4-digit MPIN' : 'Enter mobile banking password or MPIN';
+  const credentialLabel = method === 'esewa' ? 'Password/MPIN' : method === 'khalti' ? 'MPIN' : 'Password';
+  const credentialPlaceholder = method === 'esewa' ? 'Enter eSewa password or MPIN' : method === 'khalti' ? 'Enter 4-digit MPIN' : 'Enter mobile banking password or MPIN';
 
   useEffect(() => {
     if (!open) {
@@ -84,6 +86,8 @@ const DummyPaymentScreen = ({ open, onClose, onSuccess, doctorName, doctorPhoto,
       setMobileNumber('');
       setBankAccountNumber('');
       setAuthSecret('');
+      setMobileBankingPassword('');
+      setMobileBankingMpin('');
       setTransactionId('');
     }
   }, [open]);
@@ -95,7 +99,11 @@ const DummyPaymentScreen = ({ open, onClose, onSuccess, doctorName, doctorPhoto,
       setError('Please select your bank for mobile banking payment.');
       return;
     }
-    if (!mobileNumber.trim() || !authSecret.trim()) {
+    if (method === 'mobile_banking' && (!mobileNumber.trim() || !mobileBankingPassword.trim() || !mobileBankingMpin.trim())) {
+      setError('Enter mobile number, password, and transaction PIN to continue.');
+      return;
+    }
+    if (method !== 'mobile_banking' && (!mobileNumber.trim() || !authSecret.trim())) {
       setError(`Enter mobile number and ${credentialLabel.toLowerCase()} to continue.`);
       return;
     }
@@ -225,14 +233,37 @@ const DummyPaymentScreen = ({ open, onClose, onSuccess, doctorName, doctorPhoto,
                       />
                     </>
                   ) : null}
-                  <label className="mt-2 block text-xs font-medium text-slate-700">{credentialLabel}</label>
-                  <input
-                    type="password"
-                    className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm outline-none focus:border-slate-400"
-                    placeholder={credentialPlaceholder}
-                    value={authSecret}
-                    onChange={(e) => setAuthSecret(e.target.value)}
-                  />
+                  {method === 'mobile_banking' ? (
+                    <>
+                      <label className="mt-2 block text-xs font-medium text-slate-700">Password</label>
+                      <input
+                        type="password"
+                        className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm outline-none focus:border-slate-400"
+                        placeholder="Enter mobile banking password"
+                        value={mobileBankingPassword}
+                        onChange={(e) => setMobileBankingPassword(e.target.value)}
+                      />
+                      <label className="mt-2 block text-xs font-medium text-slate-700">Transaction PIN</label>
+                      <input
+                        type="password"
+                        className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm outline-none focus:border-slate-400"
+                        placeholder="Enter transaction PIN"
+                        value={mobileBankingMpin}
+                        onChange={(e) => setMobileBankingMpin(e.target.value)}
+                      />
+                    </>
+                  ) : (
+                    <>
+                      <label className="mt-2 block text-xs font-medium text-slate-700">{credentialLabel}</label>
+                      <input
+                        type="password"
+                        className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm outline-none focus:border-slate-400"
+                        placeholder={credentialPlaceholder}
+                        value={authSecret}
+                        onChange={(e) => setAuthSecret(e.target.value)}
+                      />
+                    </>
+                  )}
                   <label className="mt-2 block text-xs font-medium text-slate-700">Payable Amount</label>
                   <input
                     readOnly
@@ -240,7 +271,9 @@ const DummyPaymentScreen = ({ open, onClose, onSuccess, doctorName, doctorPhoto,
                     value={`NPR ${totalAmount.toLocaleString()}`}
                   />
                   <p className="mt-2 text-xs text-slate-600">
-                    Enter your {selectedMethod.label} login credential to complete secure payment.
+                    {method === 'mobile_banking'
+                      ? 'Enter your mobile banking password and transaction PIN to complete secure payment.'
+                      : `Enter your ${selectedMethod.label} login credential to complete secure payment.`}
                   </p>
                 </div>
                 {error ? <p className="mt-2 text-xs text-red-600">{error}</p> : null}

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { appointmentAPI } from '../../services/api';
 import DummyPaymentScreen from './DummyPaymentScreen';
 
@@ -14,6 +15,7 @@ const toDayFromISODate = (value) => {
 const todayISO = new Date().toISOString().slice(0, 10);
 
 const BookingWidget = ({ doctor, hospitals = [] }) => {
+  const navigate = useNavigate();
   const doctorName = doctor.userId?.name || 'Doctor';
   const doctorPhoto = doctor.userId?.profilePhoto;
   const appointmentPrice = Math.max(0, Number(doctor.appointmentPrice ?? 500) || 0);
@@ -130,7 +132,17 @@ const BookingWidget = ({ doctor, hospitals = [] }) => {
           success: true
         }
       });
-      setMessage(`Booked successfully. Token #${data.queue.tokenNumber}`);
+      const tokenNumber = data?.queue?.tokenNumber;
+      navigate('/patient/dashboard', {
+        state: {
+          bookingSuccess: {
+            tokenNumber,
+            doctorName,
+            date: form.date,
+            timeSlot: form.timeSlot
+          }
+        }
+      });
     } catch (error) {
       setMessage(error.response?.data?.message || 'Booking failed');
     }

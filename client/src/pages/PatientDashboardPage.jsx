@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import AppShell from '../components/common/AppShell';
 import QueueStatusWidget from '../components/patient/QueueStatusWidget';
 import { appointmentAPI, queueAPI } from '../services/api';
@@ -28,8 +29,11 @@ const pickActiveAppointment = (appointments = []) => {
 };
 
 const PatientDashboardPage = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
   const [appointments, setAppointments] = useState([]);
   const [queue, setQueue] = useState(null);
+  const [bookingBanner, setBookingBanner] = useState(null);
   const upcomingAppointments = appointments
     .filter((item) => ACTIVE_STATUSES.includes(item.status))
     .sort((a, b) => {
@@ -61,8 +65,24 @@ const PatientDashboardPage = () => {
     return () => clearInterval(intervalId);
   }, []);
 
+  useEffect(() => {
+    const success = location.state?.bookingSuccess;
+    if (!success) return;
+    setBookingBanner(success);
+    navigate('/patient/dashboard', { replace: true });
+  }, [location.state, navigate]);
+
   return (
     <AppShell title="Patient Dashboard">
+      {bookingBanner ? (
+        <div className="mb-4 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-emerald-900 shadow-card">
+          <p className="font-semibold">Booked Successfully</p>
+          <p className="text-sm">
+            Your token number is <span className="font-semibold">#{bookingBanner.tokenNumber ?? '-'}</span>
+            {bookingBanner.doctorName ? ` with Dr. ${bookingBanner.doctorName}` : ''}.
+          </p>
+        </div>
+      ) : null}
       <div className="grid gap-4 lg:grid-cols-3">
         <div className="lg:col-span-2">
           <QueueStatusWidget queue={queue} />
