@@ -7,6 +7,25 @@ const User = require('../models/User');
 
 const DEFAULT_AVERAGE_MINUTES = 15;
 
+const getMinutesUntilSlotStart = ({ date, timeSlot, now = new Date() }) => {
+  const day = String(date || '').trim();
+  const start = String(timeSlot || '').split('-')[0]?.trim();
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(day) || !/^\d{2}:\d{2}$/.test(start || '')) return 0;
+
+  const [hour, minute] = start.split(':').map(Number);
+  if (!Number.isFinite(hour) || !Number.isFinite(minute)) return 0;
+
+  const slotStart = new Date(now);
+  slotStart.setSeconds(0, 0);
+  slotStart.setFullYear(Number(day.slice(0, 4)));
+  slotStart.setMonth(Number(day.slice(5, 7)) - 1);
+  slotStart.setDate(Number(day.slice(8, 10)));
+  slotStart.setHours(hour, minute, 0, 0);
+
+  const diffMinutes = Math.ceil((slotStart.getTime() - now.getTime()) / 60000);
+  return Math.max(0, diffMinutes);
+};
+
 const getAverageConsultationMinutes = async (doctorId) => {
   const recent = await Appointment.find({
     doctorId,
@@ -127,12 +146,13 @@ const getPatientQueueStatus = async (appointmentId) => {
   });
 
   if (!queue) {
+    const timeBasedWait = getMinutesUntilSlotStart({ date: appointment.date, timeSlot: appointment.timeSlot });
     return {
       ...details,
       currentToken: 0,
       tokenNumber: appointment.tokenNumber,
       queuePosition: 0,
-      estimatedWaitTime: 0
+      estimatedWaitTime: timeBasedWait
     };
   }
 
@@ -145,7 +165,9 @@ const getPatientQueueStatus = async (appointmentId) => {
 
   const avgMinutes = await getAverageConsultationMinutes(appointment.doctorId);
   const queuePosition = ahead.length + 1;
-  const estimatedWaitTime = ahead.length * avgMinutes;
+  const queueBasedWait = ahead.length * avgMinutes;
+  const timeBasedWait = getMinutesUntilSlotStart({ date: appointment.date, timeSlot: appointment.timeSlot });
+  const estimatedWaitTime = Math.max(queueBasedWait, timeBasedWait);
 
   return {
     ...details,
