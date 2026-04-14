@@ -18,6 +18,7 @@ const RegisterPage = () => {
     specialization: '',
     hospitalId: '',
     qualifications: '',
+    nmcNumber: '',
     experience: 0
   });
   const [hospitals, setHospitals] = useState([]);
@@ -50,6 +51,7 @@ const RegisterPage = () => {
           hospitalId: form.hospitalId,
           doctorContactNumber: form.phone,
           qualifications: form.qualifications,
+          nmcNumber: form.nmcNumber,
           experience: Number(form.experience || 0)
         });
         setMessage('Doctor registration submitted. Wait for admin approval, then login as doctor.');
@@ -214,6 +216,15 @@ const RegisterPage = () => {
                     placeholder="Enter qualifications"
                     value={form.qualifications}
                     onChange={(e) => setForm((p) => ({ ...p, qualifications: e.target.value }))}
+                  />
+                </label>
+                <label className="block text-sm font-medium text-teal-800">
+                  NMC Number
+                  <input
+                    className="mt-1 w-full rounded-lg border border-teal-200 px-3 py-2"
+                    placeholder="Enter NMC number"
+                    value={form.nmcNumber}
+                    onChange={(e) => setForm((p) => ({ ...p, nmcNumber: e.target.value }))}
                   />
                 </label>
                 <label className="block text-sm font-medium text-teal-800">

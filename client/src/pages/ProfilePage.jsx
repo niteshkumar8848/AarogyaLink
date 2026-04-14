@@ -15,11 +15,11 @@ const ProfilePage = () => {
     profilePhoto: '',
     dateOfBirth: '',
     gender: '',
-    medicalHistory: '',
     specialization: '',
     hospitalId: '',
     doctorContactNumber: '',
     qualifications: '',
+    nmcNumber: '',
     experience: 0,
     appointmentPrice: 500,
     isAvailableToday: true
@@ -48,11 +48,11 @@ const ProfilePage = () => {
       profilePhoto: user.profilePhoto || '',
       dateOfBirth: roleProfile?.dateOfBirth ? String(roleProfile.dateOfBirth).slice(0, 10) : '',
       gender: roleProfile?.gender || '',
-      medicalHistory: roleProfile?.medicalHistory || '',
       specialization: roleProfile?.specialization || '',
       hospitalId: roleProfile?.hospitals?.[0]?.hospitalId?._id || roleProfile?.hospitals?.[0]?.hospitalId || '',
       doctorContactNumber: roleProfile?.doctorContactNumber || user.phone || '',
       qualifications: roleProfile?.qualifications || '',
+      nmcNumber: roleProfile?.nmcNumber || '',
       experience: roleProfile?.experience || 0,
       appointmentPrice: roleProfile?.appointmentPrice ?? 500,
       isAvailableToday: roleProfile?.isAvailableToday ?? true
@@ -124,7 +124,6 @@ const ProfilePage = () => {
       if (user.role === 'patient') {
         payload.dateOfBirth = form.dateOfBirth || null;
         payload.gender = form.gender || null;
-        payload.medicalHistory = form.medicalHistory || '';
       }
 
       if (user.role === 'doctor') {
@@ -132,6 +131,7 @@ const ProfilePage = () => {
         payload.hospitalId = form.hospitalId;
         payload.doctorContactNumber = form.doctorContactNumber;
         payload.qualifications = form.qualifications;
+        payload.nmcNumber = form.nmcNumber;
         payload.experience = Number(form.experience || 0);
         payload.appointmentPrice = Math.max(0, Number(form.appointmentPrice || 0));
         payload.isAvailableToday = Boolean(form.isAvailableToday);
@@ -180,7 +180,6 @@ const ProfilePage = () => {
               <option value="female">Female</option>
               <option value="other">Other</option>
             </select>
-            <input className="rounded-lg border border-teal-200 px-3 py-2 md:col-span-1" value={form.medicalHistory} onChange={(e) => setForm((prev) => ({ ...prev, medicalHistory: e.target.value }))} placeholder="Medical history" />
           </div>
         ) : null}
 
@@ -198,6 +197,7 @@ const ProfilePage = () => {
             <input className="rounded-lg border border-teal-200 px-3 py-2" value={selectedHospital?.address || ''} placeholder="Location" disabled />
             <input className="rounded-lg border border-teal-200 px-3 py-2" value={form.doctorContactNumber} onChange={(e) => setForm((prev) => ({ ...prev, doctorContactNumber: e.target.value }))} placeholder="Doctor contact number" />
             <input className="rounded-lg border border-teal-200 px-3 py-2" value={form.qualifications} onChange={(e) => setForm((prev) => ({ ...prev, qualifications: e.target.value }))} placeholder="Qualifications" />
+            <input className="rounded-lg border border-teal-200 px-3 py-2" value={form.nmcNumber} onChange={(e) => setForm((prev) => ({ ...prev, nmcNumber: e.target.value }))} placeholder="NMC number" />
             <input className="rounded-lg border border-teal-200 px-3 py-2" type="number" min="0" value={form.experience} onChange={(e) => setForm((prev) => ({ ...prev, experience: e.target.value }))} placeholder="Experience" />
             <input className="rounded-lg border border-teal-200 px-3 py-2" type="number" min="0" value={form.appointmentPrice} onChange={(e) => setForm((prev) => ({ ...prev, appointmentPrice: e.target.value }))} placeholder="Appointment price (NPR)" />
             <label className="flex items-center gap-2 rounded-lg border border-teal-200 px-3 py-2 text-sm">

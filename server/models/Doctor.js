@@ -41,6 +41,7 @@ const doctorSchema = new mongoose.Schema(
     location: { type: String, default: '', trim: true },
     doctorContactNumber: { type: String, default: '', trim: true },
     qualifications: { type: String },
+    nmcNumber: { type: String, default: '', trim: true },
     experience: { type: Number, default: 0 },
     appointmentPrice: { type: Number, default: 500, min: 0 },
     hospitals: [doctorHospitalSchema],

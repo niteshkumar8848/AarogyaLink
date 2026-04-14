@@ -89,6 +89,7 @@ const registerDoctor = async (req, res) => {
       hospitalId,
       doctorContactNumber,
       qualifications,
+      nmcNumber,
       experience,
       appointmentPrice
     } = req.body;
@@ -112,6 +113,7 @@ const registerDoctor = async (req, res) => {
       location: '',
       doctorContactNumber: doctorContactNumber || phone || '',
       qualifications: qualifications || '',
+      nmcNumber: String(nmcNumber || '').trim(),
       experience: Number(experience || 0),
       appointmentPrice: Math.max(0, Number(appointmentPrice ?? 500) || 0),
       hospitals: [],
@@ -228,6 +230,7 @@ const updateMe = async (req, res) => {
       hospitalId,
       doctorContactNumber,
       qualifications,
+      nmcNumber,
       experience,
       appointmentPrice,
       isAvailableToday
@@ -285,6 +288,7 @@ const updateMe = async (req, res) => {
         if (specialization !== undefined) doctor.specialization = specialization;
         if (doctorContactNumber !== undefined) doctor.doctorContactNumber = doctorContactNumber;
         if (qualifications !== undefined) doctor.qualifications = qualifications;
+        if (nmcNumber !== undefined) doctor.nmcNumber = String(nmcNumber || '').trim();
         if (experience !== undefined) doctor.experience = experience;
         if (appointmentPrice !== undefined) doctor.appointmentPrice = Math.max(0, Number(appointmentPrice) || 0);
         if (isAvailableToday !== undefined) doctor.isAvailableToday = Boolean(isAvailableToday);

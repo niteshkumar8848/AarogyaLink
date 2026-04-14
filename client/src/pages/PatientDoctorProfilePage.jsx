@@ -68,6 +68,7 @@ const PatientDoctorProfilePage = () => {
             <p><span className="font-medium text-teal-900">Contact:</span> {doctor.doctorContactNumber || doctor.userId?.phone || 'N/A'}</p>
             <p><span className="font-medium text-teal-900">Appointment Price:</span> NPR {Number(doctor.appointmentPrice ?? 500).toLocaleString()}</p>
             <p><span className="font-medium text-teal-900">Qualifications:</span> {doctor.qualifications || 'N/A'}</p>
+            <p><span className="font-medium text-teal-900">NMC Number:</span> {doctor.nmcNumber || 'N/A'}</p>
             <p><span className="font-medium text-teal-900">Experience:</span> {doctor.experience || 0} years</p>
           </div>
         </div>

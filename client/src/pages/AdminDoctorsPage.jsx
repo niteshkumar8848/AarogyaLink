@@ -9,6 +9,7 @@ const initialForm = {
   specialization: '',
   hospitalId: '',
   doctorContactNumber: '',
+  nmcNumber: '',
   experience: 0
 };
 const initialEditForm = {
@@ -20,6 +21,7 @@ const initialEditForm = {
   hospitalId: '',
   doctorContactNumber: '',
   qualifications: '',
+  nmcNumber: '',
   experience: 0,
   isAvailableToday: true
 };
@@ -80,6 +82,7 @@ const AdminDoctorsPage = () => {
       hospitalId: doctor.hospitals?.[0]?.hospitalId?._id || doctor.hospitals?.[0]?.hospitalId || '',
       doctorContactNumber: doctor.doctorContactNumber || doctor.userId?.phone || '',
       qualifications: doctor.qualifications || '',
+      nmcNumber: doctor.nmcNumber || '',
       experience: doctor.experience || 0,
       isAvailableToday: doctor.isAvailableToday ?? true
     });
@@ -100,6 +103,7 @@ const AdminDoctorsPage = () => {
       hospitalId: editForm.hospitalId,
       doctorContactNumber: editForm.doctorContactNumber,
       qualifications: editForm.qualifications,
+      nmcNumber: editForm.nmcNumber,
       experience: Number(editForm.experience || 0),
       isAvailableToday: Boolean(editForm.isAvailableToday)
     };
@@ -150,6 +154,7 @@ const AdminDoctorsPage = () => {
           ))}
         </select>
         <input className="rounded border border-teal-200 px-2 py-1" placeholder="Doctor contact number" value={form.doctorContactNumber} onChange={(e) => setForm((p) => ({ ...p, doctorContactNumber: e.target.value }))} />
+        <input className="rounded border border-teal-200 px-2 py-1" placeholder="NMC number" value={form.nmcNumber} onChange={(e) => setForm((p) => ({ ...p, nmcNumber: e.target.value }))} />
         <input className="rounded border border-teal-200 px-2 py-1" type="number" min="0" placeholder="Experience" value={form.experience} onChange={(e) => setForm((p) => ({ ...p, experience: e.target.value }))} />
         <button className="rounded bg-primary px-3 py-1 text-white">Add Doctor</button>
       </form>
@@ -198,6 +203,7 @@ const AdminDoctorsPage = () => {
                 </select>
                 <input className="rounded border border-teal-200 px-2 py-1" value={editForm.doctorContactNumber} onChange={(e) => setEditForm((p) => ({ ...p, doctorContactNumber: e.target.value }))} placeholder="Doctor contact number" />
                 <input className="rounded border border-teal-200 px-2 py-1" value={editForm.qualifications} onChange={(e) => setEditForm((p) => ({ ...p, qualifications: e.target.value }))} placeholder="Qualifications" />
+                <input className="rounded border border-teal-200 px-2 py-1" value={editForm.nmcNumber} onChange={(e) => setEditForm((p) => ({ ...p, nmcNumber: e.target.value }))} placeholder="NMC number" />
                 <input className="rounded border border-teal-200 px-2 py-1" type="number" min="0" value={editForm.experience} onChange={(e) => setEditForm((p) => ({ ...p, experience: e.target.value }))} placeholder="Experience" />
                 <label className="flex items-center gap-2 rounded border border-teal-200 px-2 py-1 text-sm">
                   <input type="checkbox" checked={Boolean(editForm.isAvailableToday)} onChange={(e) => setEditForm((p) => ({ ...p, isAvailableToday: e.target.checked }))} />

@@ -123,6 +123,7 @@ const createDoctor = async (req, res) => {
       hospitalId,
       doctorContactNumber,
       qualifications,
+      nmcNumber,
       experience,
       appointmentPrice,
       hospitals,
@@ -149,6 +150,7 @@ const createDoctor = async (req, res) => {
       location: '',
       doctorContactNumber: doctorContactNumber || phone || '',
       qualifications,
+      nmcNumber: String(nmcNumber || '').trim(),
       experience,
       appointmentPrice: Number(appointmentPrice ?? 500),
       hospitals: hospitals || [],
@@ -198,6 +200,7 @@ const updateDoctor = async (req, res) => {
       hospitalId,
       doctorContactNumber,
       qualifications,
+      nmcNumber,
       experience,
       appointmentPrice,
       hospitals,
@@ -240,6 +243,7 @@ const updateDoctor = async (req, res) => {
     if (specialization !== undefined) doctor.specialization = specialization;
     if (doctorContactNumber !== undefined) doctor.doctorContactNumber = doctorContactNumber;
     if (qualifications !== undefined) doctor.qualifications = qualifications;
+    if (nmcNumber !== undefined) doctor.nmcNumber = String(nmcNumber || '').trim();
     if (experience !== undefined) doctor.experience = experience;
     if (appointmentPrice !== undefined) doctor.appointmentPrice = Math.max(0, Number(appointmentPrice) || 0);
     if (hospitals !== undefined) doctor.hospitals = hospitals;
